@@ -183,7 +183,7 @@ fn ai_score(text: &str) -> Option<f64> {
     let base = std::env::var("ARUARU_LLM_URL").unwrap_or_else(|_| "http://127.0.0.1:4600".into());
     let snippet: String = text.chars().take(600).collect();
     let body = serde_json::json!({"query": "スピーカーユニット(ウーファー・ツィーター)を販売する通販ページ", "documents": [snippet]});
-    let resp = ureq::post(&format!("{base}/v1/rerank")).timeout(std::time::Duration::from_secs(20)).send_json(body).ok()?;
+    let resp = ureq::post(&format!("{base}/aruaru_llm.v1.Llm/Rerank")).timeout(std::time::Duration::from_secs(20)).send_json(body).ok()?;
     let v: serde_json::Value = resp.into_json().ok()?;
     v["scores"][0].as_f64()
 }
