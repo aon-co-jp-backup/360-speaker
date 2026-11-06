@@ -326,3 +326,17 @@ fn main() {
     }
     println!("shops-crawler: {} shops -> {out_path}", out.shops.len());
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    /// aruaru-llm の Connect 経路(Rerank)への疎通。ARUARU_LLM_URL が到達可能なときだけ実行する
+    /// (到達不能なら何もしない=CI等で落とさない)。応答は {"scores":[数値]}。
+    #[test]
+    fn ai_score_talks_to_connect_rerank_when_available() {
+        let Ok(base) = std::env::var("ARUARU_LLM_URL") else { return };
+        if ureq::get(&format!("{base}/healthz")).timeout(std::time::Duration::from_secs(3)).call().is_err() { return; }
+        let s = ai_score("ウーファー ツィーター 在庫あり 送料無料");
+        assert!(s.is_some(), "Rerank の応答に scores[0] が無い");
+    }
+}
